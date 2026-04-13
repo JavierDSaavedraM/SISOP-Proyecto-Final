@@ -1,0 +1,92 @@
+/* Tabs container */
+#input-tabs {
+    font-size: 13px;
+}
+
+/* Grupos de inputs */
+.input-group {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 6px 10px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 3px 5px;
+    box-sizing: border-box;
+}
+
+/* Tabla de procesos */
+#process-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+#process-table th,
+#process-table td {
+    border: 1px solid #999;
+    padding: 3px 5px;
+    text-align: center;
+}
+
+#process-table th {
+    background: #b7b7e0;
+}
+
+#process-table input {
+    width: 45px;
+    padding: 2px;
+    text-align: center;
+}
+
+/* Botones */
+#btn-add-row,
+#btn-load-manual,
+#btn-load-files,
+.btn-remove-row {
+    padding: 4px 10px;
+    cursor: pointer;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background: #ddd;
+    font-size: 12px;
+}
+
+#btn-load-manual,
+#btn-load-files {
+    display: block;
+    margin-top: 14px;
+    background: #8888d6;
+    font-weight: bold;
+    width: 100%;
+    padding: 6px;
+}
+
+#btn-load-manual:hover,
+#btn-load-files:hover {
+    background: #6666c4;
+}
+
+.btn-remove-row {
+    background: #f15454;
+    color: #fff;
+    border-color: #c00;
+}
+
+h2 {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 12px 0 6px 0;
+    border-bottom: 1px solid #999;
+    padding-bottom: 3px;
+}
+
+/* Ocultar quantum cuando no aplica */
+#quantum-label, #quantum {
+    display: none;
+}

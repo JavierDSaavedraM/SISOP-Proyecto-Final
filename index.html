@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="canonical" href="https://html5-templates.com/" />
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="js/script.js"></script>	
+    <script src="js/tabs.js"></script>	
+    <link rel="stylesheet" type="text/css" href="css/base-template.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>Proyecto Final de Sistemas Operativos</title>
+  </head>
+  <body>
+    <div id="desktop">
+      <div class="window " data-title="Bienvenida">
+        <h1>Proyecto Final de Sistemas Operativos</h1>
+        <p>Simulador Visual que represente de manera gráfica el funcionamiento de <strong>procesos</strong>, <strong>planificación de cpu</strong>, y <strong>paginación de memoria</strong> en los sistemas operativos.</p>
+        <p>Diego Emilio Muñiz Ramirez - 621784</p>
+        <p>Javier Djorkaef Saavedra Mendiola - 624198</p>
+        <p>Salvador Ricardo Lozano Rodriguez - 641686</p>
+        <hr />
+        <p><strong>C&oacute;digo de Honor:</strong> Nosotros damos nuestar palabra que hemos realizado esto con integridad acad&eacute;mica</p>
+      </div>
+      <!-- Inicio Ventana para la entrada de datos-->
+      <div class="window" data-title="Datos">
+        <div id="input-tabs">
+          <ul>
+            <li><a href="#tab-manual">Manual</a></li>
+            <li><a href="#tab-archivo">Archivo</a></li>
+          </ul>
+
+          <div id="tab-manual">
+            <h2>Configuración de Memoria</h2>
+            <div class="input-group">
+              <label>Memoria Total (KB)</label>
+              <input type="number" id="mem-total" min="1" value="64">
+              <label>Tamaño de Página (KB)</label>
+              <input type="number" id="mem-pagesize" min="1" value="4">
+              <label>Número de Frames</label>
+              <input type="number" id="mem-frames" min="1" value="16">
+            </div>
+
+            <h2>Procesos</h2>
+            <table id="process-table">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Arrival</th>
+                  <th>Burst</th>
+                  <th>Priority</th>
+                  <th>Páginas</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="number" class="pid" min="1" value="1"></td>
+                  <td><input type="number" class="arrival" min="0" value="0"></td>
+                  <td><input type="number" class="burst" min="1" value="5"></td>
+                  <td><input type="number" class="priority" min="1" value="1"></td>
+                  <td><input type="number" class="pages" min="1" value="4"></td>
+                  <td><button class="btn-remove-row">X</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <button id="btn-add-row">+ Proceso</button>
+
+            <h2>Scheduling</h2>
+            <div class="input-group">
+              <label>Algoritmo</label>
+              <select id="sched-algorithm">
+                <optgroup label="Non-Preemptive">
+                  <option value="fcfs">FCFS</option>
+                  <option value="sjf">SJF</option>
+                  <option value="hrrn">HRRN</option>
+                </optgroup>
+                <optgroup label="Preemptive">
+                  <option value="rr">Round Robin</option>
+                  <option value="srtf">SRTF</option>
+                  <option value="priority_p">Priority (Preemptive)</option>
+                  <option value="mlq">Multilevel Queue</option>
+                  <option value="mlfq">Multilevel Feedback Queue</option>
+                </optgroup>
+              </select>
+              <label id="quantum-label">Quantum</label>
+              <input type="number" id="quantum" min="1" value="2">
+            </div>
+
+            <h2>Reemplazo de Páginas</h2>
+            <div class="input-group">
+              <label>Algoritmo</label>
+              <select id="replace-algorithm">
+                <option value="fifo">FIFO</option>
+                <option value="lru">LRU</option>
+                <option value="optimal">Óptimo</option>
+                <option value="clock">Clock</option>
+                <option value="second">Segunda Oportunidad</option>
+              </select>
+              <label>Cadena de Referencias</label>
+              <input type="text" id="page-references" placeholder="Ej: 1,2,3,4,1,2,5">
+            </div>
+
+            <button id="btn-load-manual">Cargar Datos</button>
+          </div>
+
+          <div id="tab-archivo">
+            <h2>Archivo de Procesos</h2>
+            <p>Formato: PID,Arrival,Burst,Priority,Pages</p>
+            <input type="file" id="file-procesos" accept=".txt">
+
+            <h2>Archivo de Memoria</h2>
+            <p>Formato: Memoria=X, PageSize=X, Frames=X</p>
+            <input type="file" id="file-memoria" accept=".txt">
+
+            <button id="btn-load-files">Cargar Archivos</button>
+          </div>
+        </div>
+      </div>
+      <!-- Fin Ventana para la entrada de datos-->
+      <div class="window closed" data-title="Diagrama de estados Procesos">
+        Muestra el diagrama de procesos.
+      </div>
+      <div class="window closed" data-title="Scheduling / CPU">
+        Muestra el diagrama de GRANT del CPU con los algoritmos.
+      </div>
+      <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
+        Muestra la memoria.
+      </div>
+      <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
+        Window content
+      </div>
+
+      <div id="taskbar">
+      </div>
+
+      <div id="icons">
+        <a class="openWindow" data-id="0">Bienvenida</a>
+        <a class="openWindow" data-id="1">Entrada de datos</a>
+        <a class="openWindow" data-id="2">Diagrama de estados Procesos</a>
+        <a class="openWindow" data-id="3">Scheduling / CPU</a>
+        <a class="openWindow" data-id="4">Memoria y Paginaci&oacute;n</a>
+      </div>
+      <a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">&copy; HTML5-Templates.com</a>	
+      <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
+    </div>
+  </body>
+
+</html>
