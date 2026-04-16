@@ -187,7 +187,7 @@ input,select{vertical-align:middle}
 #window3 {  top: 20px; left: 240px;}
 #window4 {  top: 20px; left: 240px;}
 #window0 .wincontent {	width: 660px; height: 300px;	}
-#window1 .wincontent {	width: 250px; height: 140px; overflow-y: auto;	}
+#window1 .wincontent { min-width: 330px; min-height: 330px;}
 #window2 .wincontent {	width: 400px; height: 350px;	}
 #window3 .wincontent {	width: 800px; height: 450px;	}
 

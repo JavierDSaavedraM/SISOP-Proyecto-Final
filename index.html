@@ -11,7 +11,7 @@
     <script src="js/script.js"></script>	
     <script src="js/tabs.js"></script>	
     <link rel="stylesheet" type="text/css" href="css/base-template.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/input-tabs.css" />
     <title>Proyecto Final de Sistemas Operativos</title>
   </head>
   <body>
@@ -26,7 +26,44 @@
         <p><strong>C&oacute;digo de Honor:</strong> Nosotros damos nuestar palabra que hemos realizado esto con integridad acad&eacute;mica</p>
       </div>
       <!-- Inicio Ventana para la entrada de datos-->
-      <div class="window" data-title="Datos"></div>
+      <div class="window" data-title="Datos"> 
+        <div class="tabs-container" id="input-tabs">
+          <div class="tabs-nav">
+            <button class="tab-btn active">Procesos</button>
+            <button class="tab-btn">Memoria</button>
+            <button class="tab-btn">Archivos</button>
+          </div>
+          <div class="tab-panel active" id="tab-Proceso">
+            <h2>Configuracion de Procesos</h2>
+            <form id="form-procesos">
+              <div class="input-form">
+                <label>PID:</label>
+                <input type="number" class="pid" min="1" value="1"></td>
+              </div>
+              <div class="input-form">
+              <label>Arrival:</label>
+              <input type="number" class="arrival" min="0" value="0">
+              </div>
+              <div class="input-form">
+                <label>Burst:</label>
+                <input type="number" class="burst" min="1" value="1"></td>
+              </div>
+              <div class="input-form">
+                <label>Priority:</label>
+                <input type="number" class="priority" min="1" value="1">
+              </div>
+              <div class="input-form" id="pages">
+                <label>Pages:</label>
+                <input type="number" class="pages" min="1" value="4">
+              </div>
+              <div class="btn-group">
+                <button type="button" id="btn-add-proceso" class="btn-action">Agregar</button>
+                <button type="button" id="btn-reboot-proceso" class="btn-action">Reiniciar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
       <!-- Fin Ventana para la entrada de datos-->
       <div class="window closed" data-title="Diagrama de estados Procesos">
         Muestra el diagrama de procesos.
@@ -36,9 +73,6 @@
       </div>
       <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
         Muestra la memoria.
-      </div>
-      <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
-        Window content
       </div>
 
       <div id="taskbar">
