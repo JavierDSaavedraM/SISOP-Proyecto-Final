@@ -40,14 +40,20 @@
 
 form {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+#form-archivos {
+  grid-template-columns: 1fr;
 }
 
 .input-form {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap:1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #000;
 }
 
 .input-form input {
@@ -55,24 +61,48 @@ form {
   box-sizing: border-box;
   padding: 0.5rem;
 }
+
 .btn-group {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 5px;
+  grid-column: 1 / -1;
 }
-  .btn-group {
-    flex-direction: row;
-  }
+.btn-group button{
+  display: block;
+  margin: 5px 0 10px 0;
+  padding: 5px 10px;
+  background-color: #8888d6;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #000;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+#input-datos {
+  container-type: inline-size;
+  container-name: inputtabs;
+  width: 100%;
+}
 
 /* Pantallas grandes */
-@media (min-width: 768px) {
-  form {
-    grid-template-columns: 1fr 1fr ;
+@container inputtabs (min-width: 750px) {
+  #form-procesos{
+   grid-template-columns: repeat(5, 1fr);
+  }
+  #form-memoria{
+   grid-template-columns: repeat(3, 1fr);
+  }
+  #form-archivos{
+   grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Último elemento ocupa ambas columnas */
-  #pages{
-    grid-column: 1 / -1;
+  .btn-group button{
+    display: inline-block;
   }
 
 }
+
+

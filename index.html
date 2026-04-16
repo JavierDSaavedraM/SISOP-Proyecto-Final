@@ -9,7 +9,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="js/script.js"></script>	
-    <script src="js/tabs.js"></script>	
+    <script src="js/ingresar-datos.js"></script>	
     <link rel="stylesheet" type="text/css" href="css/base-template.css" />
     <link rel="stylesheet" type="text/css" href="css/input-tabs.css" />
     <title>Proyecto Final de Sistemas Operativos</title>
@@ -27,38 +27,88 @@
       </div>
       <!-- Inicio Ventana para la entrada de datos-->
       <div class="window" data-title="Datos"> 
-        <div class="tabs-container" id="input-tabs">
+        <div class="tabs-container" id="input-datos">
           <div class="tabs-nav">
-            <button class="tab-btn active">Procesos</button>
-            <button class="tab-btn">Memoria</button>
-            <button class="tab-btn">Archivos</button>
+            <button class="tab-btn" data-tab="tab-procesos">Procesos</button>
+            <button class="tab-btn" data-tab="tab-memoria">Memoria</button>
+            <button class="tab-btn" data-tab="tab-archivos">Archivos</button>
           </div>
-          <div class="tab-panel active" id="tab-Proceso">
+          <div class="tab-panel" id="tab-procesos">
             <h2>Configuracion de Procesos</h2>
             <form id="form-procesos">
-              <div class="input-form">
+              <div class="input-form" id="input-pid">
                 <label>PID:</label>
-                <input type="number" class="pid" min="1" value="1"></td>
+                <input type="number" class="pid" min="1" value="1">
               </div>
-              <div class="input-form">
+              <div class="input-form" id="input-arrival">
               <label>Arrival:</label>
               <input type="number" class="arrival" min="0" value="0">
               </div>
-              <div class="input-form">
+              <div class="input-form" id="input-burst">
                 <label>Burst:</label>
-                <input type="number" class="burst" min="1" value="1"></td>
+                <input type="number" class="burst" min="1" value="1">
               </div>
-              <div class="input-form">
+              <div class="input-form" id="input-priority">
                 <label>Priority:</label>
                 <input type="number" class="priority" min="1" value="1">
               </div>
-              <div class="input-form" id="pages">
+              <div class="input-form" id="input-pages">
                 <label>Pages:</label>
                 <input type="number" class="pages" min="1" value="4">
               </div>
               <div class="btn-group">
                 <button type="button" id="btn-add-proceso" class="btn-action">Agregar</button>
                 <button type="button" id="btn-reboot-proceso" class="btn-action">Reiniciar</button>
+              </div>
+            <table id="tabla-procesos-input" border="1" style="width: 100%; text-align: center;">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Arrival</th>
+                  <th>Burst</th>
+                  <th>Priority</th>
+                  <th>Pages</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            </form>
+          </div>
+          <div class="tab-panel" id="tab-memoria">
+            <h2>Configuracion de Memoria</h2>
+            <form id="form-memoria">
+              <div class="input-form" id="input-memoria">
+                <label>Memoria Total (KB):</label>
+                <input type="number" class="mem-total" min="1" value="64">
+              </div>
+              <div class="input-form" id="input-pagesize">
+                <label>Tama&ntilde;o de P&aacute;gina:</label>
+                <input type="number" class="mem-pagesize" min="1" value="4">
+              </div>
+              <div class="input-form" id="input-frames">
+                <label>Numero de Frames:</label>
+                <input type="number" class="mem-frames" min="1" value="16">
+              </div>
+              <div class="btn-group">
+                <button type="button" id="btn-add-memory" class="btn-action">Agregar memoria</button>
+                <button type="button" id="btn-reboot-memory" class="btn-action">Reiniciar</button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-panel" id="tab-archivos">
+            <h2>Cargar un archivo de texto</h2>
+            <form id="form-archivos">
+              <div class="input-form" id="input-archivo-procesos">
+                <label>Formato: <em>PID,Arrival,Burst,Priority,Pages</em></label>
+                <input type="file" id="file-procesos" accept=".txt">
+              </div>
+              <div class="input-form" id="input-archivo-memoria">
+                <label>Formato: <em>Memoria, PageSize, Frames</em></label>
+                <input type="file" id="file-memoria" accept=".txt">
+              </div>
+              <div class="btn-group">
+                <button type="button" id="btn-load-files" class="btn-action">Cargar Archivos</button>
               </div>
             </form>
           </div>
@@ -89,5 +139,4 @@
       <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
     </div>
   </body>
-
 </html>
