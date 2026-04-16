@@ -10,6 +10,13 @@
 ##################################################################################
 ################################################################################*/
 
+var simData = {
+    processes: [],
+    memory: { total: 64, pageSize: 4, frames: 16 },
+    scheduling: { algorithm: "fcfs", quantum: 2 },
+    replacement: { algorithm: "fifo", references: [] }
+};
+
 var i = 0,
   minimizedWidth = new Array,
   minimizedHeight = new Array,
