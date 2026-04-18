@@ -6,11 +6,10 @@ var schedState = {
   currentStep    : 0,
   contextChanges : 0,
   isRunning      : false,
+  stepPaused     : false,
   metrics        : {},
   firstResponse  : {}
 };
-
-var schedInterval = null;
 
 // ============================================================
 // UTILIDADES
@@ -316,7 +315,8 @@ function renderSummary(metrics, procs, timeline, currentStep) {
   var busyTime     = timeline.slice(0, currentStep).reduce(function(acc, b) {
     return acc + (b.end - b.start);
   }, 0);
-  var cpuUtil = ((busyTime / (totalTime - firstArrival)) * 100).toFixed(1);
+  var span    = totalTime - firstArrival;
+  var cpuUtil = span > 0 ? ((busyTime / span) * 100).toFixed(1) : "0.0";
 
   document.getElementById("avg-turnaround").textContent  = (sumTAT / done.length).toFixed(2);
   document.getElementById("avg-waiting").textContent     = (sumWT  / done.length).toFixed(2);
@@ -377,12 +377,7 @@ document.getElementById("sched-algorithm").addEventListener("change", function()
 });
 
 document.getElementById("sched-speed").addEventListener("input", function() {
-  document.getElementById("sched-speed-label").textContent = this.value + "ms";
-  if (schedInterval) {
-    clearInterval(schedInterval);
-    schedInterval = null;
-    runStep();
-  }
+  document.getElementById("sched-speed-label").textContent = (2100 - parseInt(this.value)) + "ms";
 });
 
 // ============================================================
@@ -420,46 +415,43 @@ function startSched() {
 
   var result = calcMetrics(timeline, simData.processes);
 
-  schedState.timeline        = timeline;
-  schedState.currentStep     = 0;
-  schedState.contextChanges  = countContextChanges(timeline);
-  schedState.isRunning       = true;
-  schedState.metrics         = result.metrics;
-  schedState.firstResponse   = result.firstResponse;
+  schedState.timeline       = timeline;
+  schedState.currentStep    = 0;
+  schedState.contextChanges = countContextChanges(timeline);
+  schedState.isRunning      = true;
+  schedState.stepPaused     = false;
+  schedState.metrics        = result.metrics;
+  schedState.firstResponse  = result.firstResponse;
 
-  document.getElementById("btn-run-sched").textContent = "↺ Reset";
+  document.getElementById("btn-run-sched").textContent    = "↺ Reset";
   document.getElementById("btn-run-sched").classList.add("running");
-  document.getElementById("btn-next-step").disabled    = false;
-  document.getElementById("btn-reset-sched").disabled  = false;
-  document.getElementById("context-count").textContent = schedState.contextChanges;
+  document.getElementById("btn-next-step").disabled       = false;
+  document.getElementById("btn-reset-sched").disabled     = false;
+  document.getElementById("context-count").textContent    = schedState.contextChanges;
 
   initCanvases();
   runStep();
 }
 
 function resetSched() {
-  if (schedInterval) {
-    clearInterval(schedInterval);
-    schedInterval = null;
-  }
-
   schedState.timeline       = [];
   schedState.currentStep    = 0;
   schedState.contextChanges = 0;
   schedState.isRunning      = false;
+  schedState.stepPaused     = false;
   schedState.metrics        = {};
 
-  document.getElementById("btn-run-sched").textContent  = "▶ Correr";
+  document.getElementById("btn-run-sched").textContent    = "▶ Correr";
   document.getElementById("btn-run-sched").classList.remove("running");
-  document.getElementById("btn-next-step").textContent  = "⏸ Pausar";
-  document.getElementById("btn-next-step").disabled     = true;
-  document.getElementById("btn-reset-sched").disabled   = true;
-  document.getElementById("context-count").textContent  = "0";
-  document.getElementById("avg-turnaround").textContent = "-";
-  document.getElementById("avg-waiting").textContent    = "-";
-  document.getElementById("avg-response").textContent   = "-";
-  document.getElementById("cpu-utilization").textContent = "-";
-  document.getElementById("metrics-body").innerHTML     = "";
+  document.getElementById("btn-next-step").textContent    = "⏸ Pausar";
+  document.getElementById("btn-next-step").disabled       = true;
+  document.getElementById("btn-reset-sched").disabled     = true;
+  document.getElementById("context-count").textContent    = "0";
+  document.getElementById("avg-turnaround").textContent   = "-";
+  document.getElementById("avg-waiting").textContent      = "-";
+  document.getElementById("avg-response").textContent     = "-";
+  document.getElementById("cpu-utilization").textContent  = "-";
+  document.getElementById("metrics-body").innerHTML       = "";
 
   resetCanvases();
 }
@@ -468,36 +460,42 @@ function resetSched() {
 // PASO AUTOMATICO
 // ============================================================
 function runStep() {
-  var speed = parseInt(document.getElementById("sched-speed").value);
   document.getElementById("btn-next-step").textContent = "⏸ Pausar";
+  schedState.stepPaused = false;
 
-  schedInterval = setInterval(function() {
+  function nextStep() {
+    if (schedState.stepPaused) return;
     if (schedState.currentStep >= schedState.timeline.length) {
-      clearInterval(schedInterval);
-      schedInterval = null;
-      document.getElementById("btn-next-step").textContent  = "✓ Terminado";
-      document.getElementById("btn-next-step").disabled     = true;
+      document.getElementById("btn-next-step").textContent = "✓ Terminado";
+      document.getElementById("btn-next-step").disabled    = true;
       return;
     }
 
     schedState.currentStep++;
     var step     = schedState.currentStep;
     var timeline = schedState.timeline;
+    var speed    = 2100 - parseInt(document.getElementById("sched-speed").value);
 
-    renderGantt(timeline, step);
     renderQueues(timeline, step, simData.processes);
     renderMetricsTable(schedState.metrics, simData.processes, step, timeline);
     renderSummary(schedState.metrics, simData.processes, timeline, step);
+    renderGantt(timeline, step, function() {
+      setTimeout(nextStep, speed * 0.4);
+    });
+  }
 
-  }, speed);
+  nextStep();
 }
 
 document.getElementById("btn-next-step").addEventListener("click", function() {
   if (!schedState.isRunning) return;
 
-  if (schedInterval) {
-    clearInterval(schedInterval);
-    schedInterval = null;
+  if (!schedState.stepPaused) {
+    schedState.stepPaused = true;
+    if (animState.blockAnim) {
+      cancelAnimationFrame(animState.blockAnim);
+      animState.blockAnim = null;
+    }
     document.getElementById("btn-next-step").textContent = "▶ Continuar";
   } else {
     runStep();
