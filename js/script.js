@@ -10,6 +10,13 @@
 ##################################################################################
 ################################################################################*/
 
+var simData = {
+    processes: [],
+    memory: { total: 64, pageSize: 4, frames: 16 },
+    scheduling: { algorithm: "fcfs", quantum: 2 },
+    replacement: { algorithm: "fifo", references: [] }
+};
+
 var i = 0,
   minimizedWidth = new Array,
   minimizedHeight = new Array,
@@ -126,20 +133,23 @@ $(document).ready(function(){
     openWindow($(this).attr("data-id"));
   });
 
-  $(".winmaximize").click(function(){
-    if ($(this).parent().parent().hasClass('fullSizeWindow')) {			// minimize
+$(".winmaximize").click(function(){
+    var win = $(this).parent().parent();
+    var id  = win.attr("data-id");
 
-      $(this).parent().parent().removeClass('fullSizeWindow');
-      $(this).parent().parent().children(".wincontent").height(minimizedHeight[$(this).parent().parent().attr("data-id")]);	
-      $(this).parent().parent().children(".wincontent").width(minimizedWidth[$(this).parent().parent().attr("data-id")]);
-    } else {															// maximize
-      $(this).parent().parent().addClass('fullSizeWindow');
-
-      minimizedHeight[$(this).parent().parent().attr('data-id')] = $(this).parent().parent().children(".wincontent").height();
-      minimizedWidth[$(this).parent().parent().attr('data-id')] = $(this).parent().parent().children(".wincontent").width();
-
-      adjustFullScreenSize();
+    if (win.hasClass('fullSizeWindow')) {
+        win.removeClass('fullSizeWindow');
+        var wincontent = win.children(".wincontent")[0];
+        wincontent.style.removeProperty("width");
+        wincontent.style.removeProperty("height");
+        wincontent.style.width  = minimizedWidth[id]  + "px";
+        wincontent.style.height = minimizedHeight[id] + "px";
+    } else {
+        minimizedWidth[id]  = win.children(".wincontent").width();
+        minimizedHeight[id] = win.children(".wincontent").height();
+        win.addClass('fullSizeWindow');
+        adjustFullScreenSize();
     }
-  });		
+});
   adjustFullScreenSize();	
 });

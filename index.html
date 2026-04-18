@@ -9,14 +9,15 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="js/script.js"></script>	
-    <script src="js/tabs.js"></script>	
     <link rel="stylesheet" type="text/css" href="css/base-template.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/input-window.css" />
+    <link rel="stylesheet" type="text/css" href="css/scheduling.css" />
+    <link rel="stylesheet" type="text/css" href="css/process.css" />
     <title>Proyecto Final de Sistemas Operativos</title>
   </head>
   <body>
     <div id="desktop">
-      <div class="window " data-title="Bienvenida">
+      <div class="window closed" data-title="Bienvenida">
         <h1>Proyecto Final de Sistemas Operativos</h1>
         <p>Simulador Visual que represente de manera gráfica el funcionamiento de <strong>procesos</strong>, <strong>planificación de cpu</strong>, y <strong>paginación de memoria</strong> en los sistemas operativos.</p>
         <p>Diego Emilio Muñiz Ramirez - 621784</p>
@@ -26,19 +27,205 @@
         <p><strong>C&oacute;digo de Honor:</strong> Nosotros damos nuestar palabra que hemos realizado esto con integridad acad&eacute;mica</p>
       </div>
       <!-- Inicio Ventana para la entrada de datos-->
-      <div class="window" data-title="Datos"></div>
+      <div class="window" data-title="Datos"> 
+        <div class="tabs-container" id="input-datos">
+          <div class="tabs-nav">
+            <button class="tab-btn" data-tab="tab-procesos">Procesos</button>
+            <button class="tab-btn" data-tab="tab-memoria">Memoria</button>
+            <button class="tab-btn" data-tab="tab-archivos">Archivos</button>
+          </div>
+          <div class="tab-panel" id="tab-procesos">
+            <h2>Configuracion de Procesos</h2>
+            <div id="table-wrapper">
+              <table id="tabla-procesos">
+                <thead>
+                  <tr>
+                    <th>PID</th>
+                    <th>Arrival</th>
+                    <th>Burst</th>
+                    <th>Priority</th>
+                    <th>Pages</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="number" class="pid" min="1" value="1" readonly></td>
+                    <td><input type="number" class="arrival" min="0" value="0"></td>
+                    <td><input type="number" class="burst" min="1" value="5"></td>
+                    <td><input type="number" class="priority" min="1" value="1"></td>
+                    <td><input type="number" class="pages" min="1" value="4"></td>
+                    <td><button class="btn-remove-row">X</button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <button id="btn-add-proceso">+ Proceso</button>
+            </div>
+          </div>
+          <div class="tab-panel" id="tab-memoria">
+            <h2>Configuracion de Memoria</h2>
+            <form id="form-memoria">
+              <div class="input-form" id="input-memoria">
+                <label>Memoria Total (KB):</label>
+                <input type="number" class="mem-total" min="1" value="64">
+              </div>
+              <div class="input-form" id="input-pagesize">
+                <label>Tama&ntilde;o de P&aacute;gina:</label>
+                <input type="number" class="mem-pagesize" min="1" value="4">
+              </div>
+              <div class="input-form" id="input-frames">
+                <label>Numero de Frames:</label>
+                <input type="number" class="mem-frames" min="1" value="16">
+              </div>
+            </form>
+          </div>
+          <div class="tab-panel" id="tab-archivos">
+            <h2>Cargar un archivo de texto</h2>
+            <form id="form-archivos">
+              <div class="input-form" id="input-archivo-procesos">
+                <label>Formato: <em>PID,Arrival,Burst,Priority,Pages</em></label>
+                <input type="file" id="file-procesos" accept=".txt">
+              </div>
+              <div class="input-form" id="input-archivo-memoria">
+                <label>Formato: <em>Memoria=X PageSize=X Frames=X</em></label>
+                <input type="file" id="file-memoria" accept=".txt">
+              </div>
+            </form>
+            <div id="file-status">
+              <p id="status-procesos" class="status-msg hidden">✓ procesos.txt cargado correctamente</p>
+              <p id="status-memoria"  class="status-msg hidden">✓ memoria.txt cargado correctamente</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Fin Ventana para la entrada de datos-->
+      <!-- Inicio Ventana para los diagramas de los procesos-->
       <div class="window closed" data-title="Diagrama de estados Procesos">
-        Muestra el diagrama de procesos.
+        <button id="btn-replay-states" class="btn-action">Reiniciar Animación</button>
+        <div id="state-diagram" class="state-container">
+          <div id="state-new" class="state-box">New</div>
+          <div class="arrows">&#8594;</div>
+          <div id="state-ready" class="state-box">Ready</div>
+          <div class="arrows">&#8594;<br>&#8592;</div>
+          <div id="state-running" class="state-box">Running</div>
+          <div class="arrows">&#8594;</div>
+          <div id="state-terminated" class="state-box">Terminated</div>
+        </div>
+        <div id="state-waiting" class="state-box waiting-box">Waiting</div>
+        <hr>
+        <p><strong>Proceso Actual:</strong> <span id="current-pid-state">Ninguno</span></p>
       </div>
-      <div class="window closed" data-title="Scheduling / CPU">
-        Muestra el diagrama de GRANT del CPU con los algoritmos.
+      <!-- Fin Ventana para los diagramas de los procesos-->
+      <!-- Inicio Ventana para Scheduling-->
+      <div class="window" data-title="Scheduling / CPU">
+        <div class="tabs-container" id="scheduling-container">
+          <!-- Controles superiores -->
+          <div id="sched-controls">
+            <div id="sched-controls-left">
+              <button id="btn-run-sched">▶ Correr</button>
+              <select id="sched-algorithm">
+                <optgroup label="Non-Preemptive">
+                  <option value="fcfs">FCFS</option>
+                  <option value="sjf">SJF</option>
+                  <option value="hrrn">HRRN</option>
+                </optgroup>
+                <optgroup label="Preemptive">
+                  <option value="rr">Round Robin</option>
+                  <option value="srtf">SRTF</option>
+                  <option value="priority_p">Priority (Preemptive)</option>
+                  <option value="mlq">Multilevel Queue</option>
+                  <option value="mlfq">Multilevel Feedback Queue</option>
+                </optgroup>
+              </select>
+              <div id="quantum-group" class="hidden">
+                <label>Quantum:</label>
+                <input type="number" id="sched-quantum" min="1" value="2">
+              </div>
+            </div>
+            <div id="sched-controls-right">
+              <label>Velocidad:</label>
+              <input type="range" id="sched-speed" min="100" max="2000" value="1000" step="100">
+              <span id="sched-speed-label">1000ms</span>
+            </div>
+          </div>
+
+          <!-- Cola de listos + ejecucion + contexto -->
+          <div id="sched-state">
+            <div class="sched-panel" id="panel-ready">
+              <h3>Cola de Listos</h3>
+              <div id="queue-wrapper">
+                <canvas id="queue-canvas"></canvas>
+              </div>
+            </div>
+            <div class="sched-panel" id="panel-running">
+              <h3>En Ejecución</h3>
+              <canvas id="running-canvas"></canvas>
+            </div>
+            <div class="sched-panel" id="panel-context">
+              <h3>Cambios de Contexto</h3>
+              <span id="context-count">0</span>
+            </div>
+          </div>
+
+          <!-- Diagrama de Gantt -->
+          <div id="gantt-wrapper">
+            <h3>Diagrama de Gantt</h3>
+            <div id="gantt-scroll">
+              <canvas id="gantt-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Tabla de métricas -->
+          <div id="metrics-wrapper">
+            <table id="metrics-table">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Arrival</th>
+                  <th>Burst</th>
+                  <th>Completion</th>
+                  <th>Turnaround</th>
+                  <th>Waiting</th>
+                  <th>Response</th>
+                </tr>
+              </thead>
+              <tbody id="metrics-body"></tbody>
+            </table>
+          </div>
+
+          <!-- Promedios y CPU Utilization -->
+          <div id="sched-summary">
+            <div class="summary-item">
+              <span class="summary-label">Avg Turnaround</span>
+              <span class="summary-value" id="avg-turnaround">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Avg Waiting</span>
+              <span class="summary-value" id="avg-waiting">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Avg Response</span>
+              <span class="summary-value" id="avg-response">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">CPU Utilization</span>
+              <span class="summary-value" id="cpu-utilization">-</span>
+            </div>
+          </div>
+
+          <!-- Tooltip -->
+          <div id="metrics-tooltip" class="hidden"></div>
+
+          <!-- Botón siguiente paso -->
+          <div id="sched-step-controls">
+            <button id="btn-next-step" disabled>▶ Iniciar</button>
+            <button id="btn-reset-sched" disabled>↺ Reset</button>
+          </div>
+        </div>
       </div>
+      <!-- Fin Ventana para Scheduling-->
       <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
         Muestra la memoria.
-      </div>
-      <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
-        Window content
       </div>
 
       <div id="taskbar">
@@ -54,6 +241,8 @@
       <a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">&copy; HTML5-Templates.com</a>	
       <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
     </div>
+    <script src="js/ingresar-datos.js"></script>	
+    <script src="js/scheduling-canvas.js"></script>	
+    <script src="js/scheduling.js"></script>	
   </body>
-
 </html>

@@ -1,0 +1,40 @@
+#window2 {  top: 100px; left: 300px;}
+#window2 .wincontent { width: 680px; height: 350px; overflow-y: auto; overflow-x: hidden; }
+
+.btn-action {
+  display: inline-block;
+  margin: 5px 0 10px 0;
+  padding: 5px 10px;
+  background-color: #8888d6;
+  color: white;
+  border: 1px solid #000;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Diagrama de Estados */
+.state-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+.state-box {
+  border: 2px solid #000;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #eee;
+  font-weight: bold;
+  text-align: center;
+  width: 80px;
+  transition: all 0.3s ease;
+}
+.arrows { font-size: 24px; margin: 0 10px; text-align: center; }
+.waiting-box { margin: 0 auto; width: 80px; }
+.state-active { 
+  background-color: #4CAF50 !important; 
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+}
