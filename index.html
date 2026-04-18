@@ -17,7 +17,7 @@
   </head>
   <body>
     <div id="desktop">
-      <div class="window " data-title="Bienvenida">
+      <div class="window closed" data-title="Bienvenida">
         <h1>Proyecto Final de Sistemas Operativos</h1>
         <p>Simulador Visual que represente de manera gráfica el funcionamiento de <strong>procesos</strong>, <strong>planificación de cpu</strong>, y <strong>paginación de memoria</strong> en los sistemas operativos.</p>
         <p>Diego Emilio Muñiz Ramirez - 621784</p>
@@ -117,7 +117,7 @@
       </div>
       <!-- Fin Ventana para los diagramas de los procesos-->
       <!-- Inicio Ventana para Scheduling-->
-      <div class="window closed" data-title="Scheduling / CPU">
+      <div class="window" data-title="Scheduling / CPU">
         <div class="tabs-container" id="scheduling-container">
           <!-- Controles superiores -->
           <div id="sched-controls">
@@ -153,11 +153,13 @@
           <div id="sched-state">
             <div class="sched-panel" id="panel-ready">
               <h3>Cola de Listos</h3>
-              <div id="ready-queue"></div>
+              <div id="queue-wrapper">
+                <canvas id="queue-canvas"></canvas>
+              </div>
             </div>
             <div class="sched-panel" id="panel-running">
               <h3>En Ejecución</h3>
-              <div id="running-process"></div>
+              <canvas id="running-canvas"></canvas>
             </div>
             <div class="sched-panel" id="panel-context">
               <h3>Cambios de Contexto</h3>
@@ -168,9 +170,8 @@
           <!-- Diagrama de Gantt -->
           <div id="gantt-wrapper">
             <h3>Diagrama de Gantt</h3>
-            <div id="gantt-chart">
-              <div id="gantt-timeline"></div>
-              <div id="gantt-blocks"></div>
+            <div id="gantt-scroll">
+              <canvas id="gantt-canvas"></canvas>
             </div>
           </div>
 
@@ -217,7 +218,7 @@
 
           <!-- Botón siguiente paso -->
           <div id="sched-step-controls">
-            <button id="btn-next-step" disabled>Siguiente Paso ▶</button>
+            <button id="btn-next-step" disabled>▶ Iniciar</button>
             <button id="btn-reset-sched" disabled>↺ Reset</button>
           </div>
         </div>
@@ -241,5 +242,7 @@
       <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
     </div>
     <script src="js/ingresar-datos.js"></script>	
+    <script src="js/scheduling-canvas.js"></script>	
+    <script src="js/scheduling.js"></script>	
   </body>
 </html>

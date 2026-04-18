@@ -295,3 +295,21 @@
 
 #btn-next-step:not(:disabled):hover { background: #8888d6; color: #fff; }
 #btn-reset-sched:not(:disabled):hover { background: #f15454; color: #fff; }
+
+#gantt-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+#gantt-canvas {
+  display: block;
+}
+
+#queue-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+#queue-canvas, #running-canvas {
+  display: block;
+}
