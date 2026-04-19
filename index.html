@@ -101,19 +101,26 @@
       <!-- Fin Ventana para la entrada de datos-->
       <!-- Inicio Ventana para los diagramas de los procesos-->
       <div class="window closed" data-title="Diagrama de estados Procesos">
-        <button id="btn-replay-states" class="btn-action">Reiniciar Animación</button>
-        <div id="state-diagram" class="state-container">
-          <div id="state-new" class="state-box">New</div>
-          <div class="arrows">&#8594;</div>
-          <div id="state-ready" class="state-box">Ready</div>
-          <div class="arrows">&#8594;<br>&#8592;</div>
-          <div id="state-running" class="state-box">Running</div>
-          <div class="arrows">&#8594;</div>
-          <div id="state-terminated" class="state-box">Terminated</div>
+        <div id="states-controls">
+          <button id="btn-start-states">▶ Iniciar</button>
+          <span id="current-pid-state">Proceso: Ninguno</span>
         </div>
-        <div id="state-waiting" class="state-box waiting-box">Waiting</div>
-        <hr>
-        <p><strong>Proceso Actual:</strong> <span id="current-pid-state">Ninguno</span></p>
+        <div id="state-diagram">
+          <canvas id="states-canvas"></canvas>
+        </div>
+        <div id="states-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#aaaadd"></span>New</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#80c8f0"></span>Ready</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#80d0a0"></span>Running</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f0c080"></span>Waiting</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f08080"></span>Terminated</div>
+        </div>
+        <table id="states-table">
+          <thead>
+            <tr><th>PID</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="states-table-body"></tbody>
+        </table>
       </div>
       <!-- Fin Ventana para los diagramas de los procesos-->
       <!-- Inicio Ventana para Scheduling-->
@@ -243,6 +250,7 @@
     </div>
     <script src="js/ingresar-datos.js"></script>	
     <script src="js/scheduling-canvas.js"></script>	
+    <script src="js/estados-canvas.js"></script>	
     <script src="js/scheduling.js"></script>	
   </body>
 </html>

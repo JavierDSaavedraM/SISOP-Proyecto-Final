@@ -86,10 +86,63 @@ document.querySelector("#tabla-procesos tbody").addEventListener("click", functi
   }
 });
 
-// ── Edicion manual en la tabla ──────────────────────
+// ── Validacion individual al cambiar celda ───────────────────
 document.querySelector("#tabla-procesos tbody").addEventListener("change", function(e) {
+  var input = e.target;
+  if (!input.matches("input[type='number']")) return;
+  validateCell(input);
   syncFromTabla();
 });
+
+function validateCell(input) {
+    var val   = parseInt(input.value);
+    var field = input.className;
+    var min   = field === "arrival" ? 0 : 1;
+
+    if (isNaN(val) || val < min) {
+        alert("Valor inválido en campo '" + field + "'. Debe ser >= " + min + ".");
+        input.value = min;
+    }
+}
+
+// ── Validacion global antes de correr algoritmo ──────────────
+function validateSimData() {
+    if (simData.processes.length === 0) {
+        alert("No hay procesos definidos.");
+        return false;
+    }
+
+    var warnings = [];
+    var errors   = [];
+
+    simData.processes.forEach(function(p) {
+        if (p.burst === 1)    warnings.push("P" + p.pid + ": Burst en valor default (1).");
+        if (p.priority === 1) warnings.push("P" + p.pid + ": Priority en valor default (1).");
+        if (p.pages === 1)    warnings.push("P" + p.pid + ": Pages en valor default (1).");
+        if (p.arrival < 0)    errors.push("P" + p.pid + ": Arrival no puede ser negativo.");
+        if (p.burst < 1)      errors.push("P" + p.pid + ": Burst debe ser >= 1.");
+        if (p.priority < 1)   errors.push("P" + p.pid + ": Priority debe ser >= 1.");
+        if (p.pages < 1)      errors.push("P" + p.pid + ": Pages debe ser >= 1.");
+    });
+
+    if (simData.memory.total < 1)    errors.push("Memoria total debe ser >= 1.");
+    if (simData.memory.pageSize < 1) errors.push("Tamaño de página debe ser >= 1.");
+    if (simData.memory.frames < 1)   errors.push("Número de frames debe ser >= 1.");
+    if (simData.memory.frames * simData.memory.pageSize > simData.memory.total) {
+        errors.push("Frames × PageSize (" + (simData.memory.frames * simData.memory.pageSize) + ") excede memoria total (" + simData.memory.total + ").");
+    }
+
+    if (errors.length > 0) {
+        alert("Errores que impiden ejecutar:\n\n" + errors.join("\n"));
+        return false;
+    }
+
+    if (warnings.length > 0) {
+        return confirm("Advertencias (valores en default):\n\n" + warnings.join("\n") + "\n\n¿Continuar de todas formas?");
+    }
+
+    return true;
+}
 
 // ── Carga desde archivo de procesos ─────────────────
 document.getElementById("file-procesos").addEventListener("change", function(e) {

@@ -38,3 +38,16 @@
   transform: scale(1.1);
   box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
 }
+
+.state-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    border: 1px solid #000;
+}
+.state-new        { background: #aaaadd; }
+.state-ready      { background: #80c8f0; }
+.state-running    { background: #80d0a0; }
+.state-waiting    { background: #f0c080; }
+.state-terminated { background: #f08080; }

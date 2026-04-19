@@ -396,6 +396,7 @@ document.getElementById("btn-run-sched").addEventListener("click", function() {
 });
 
 function startSched() {
+  if (!validateSimData()) return;
   var algorithm = document.getElementById("sched-algorithm").value;
   var quantum   = parseInt(document.getElementById("sched-quantum").value) || 2;
   var procs     = copyProcesses();
@@ -431,6 +432,7 @@ function startSched() {
 
   initCanvases();
   runStep();
+  initStatesCanvas();
 }
 
 function resetSched() {
@@ -452,8 +454,16 @@ function resetSched() {
   document.getElementById("avg-response").textContent     = "-";
   document.getElementById("cpu-utilization").textContent  = "-";
   document.getElementById("metrics-body").innerHTML       = "";
+  var btn = document.getElementById("btn-start-states");
+  if (btn) btn.textContent = "▶ Iniciar";
 
   resetCanvases();
+  activeStates = {};
+  if (statesCanvas) drawStatesStatic(null, null);
+  var label = document.getElementById("current-pid-state");
+  if (label) label.textContent = "Proceso: Ninguno";
+  var tbody = document.getElementById("states-table-body");
+  if (tbody) tbody.innerHTML = "";
 }
 
 // ============================================================
@@ -482,6 +492,7 @@ function runStep() {
     renderGantt(timeline, step, function() {
       setTimeout(nextStep, speed * 0.4);
     });
+    updateStatesDiagram(timeline, step, simData.processes);
   }
 
   nextStep();
