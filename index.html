@@ -12,7 +12,8 @@
     <link rel="stylesheet" type="text/css" href="css/base-template.css" />
     <link rel="stylesheet" type="text/css" href="css/input-window.css" />
     <link rel="stylesheet" type="text/css" href="css/scheduling.css" />
-    <link rel="stylesheet" type="text/css" href="css/process.css" />
+    <link rel="stylesheet" type="text/css" href="css/scheduling.css" />
+    <link rel="stylesheet" type="text/css" href="css/memory.css" />
     <title>Proyecto Final de Sistemas Operativos</title>
   </head>
   <body>
@@ -123,8 +124,8 @@
         </table>
       </div>
       <!-- Fin Ventana para los diagramas de los procesos-->
-      <!-- Inicio Ventana para Scheduling-->
-      <div class="window" data-title="Scheduling / CPU">
+      <!-- Inicio Ventana para Scheduling--> 
+      <div class="window closed" data-title="Scheduling / CPU">
         <div class="tabs-container" id="scheduling-container">
           <!-- Controles superiores -->
           <div id="sched-controls">
@@ -231,9 +232,121 @@
         </div>
       </div>
       <!-- Fin Ventana para Scheduling-->
-      <div class="window closed" data-title="Memoria y Paginaci&oacute;n">
-        Muestra la memoria.
+      <!-- Inicio Ventana para Memoria y Paginacion-->
+      <div class="window" data-title="Memoria y Paginación">
+        <div class="tabs-container" id="memory-tabs">
+          <div class="tabs-nav">
+            <button class="tab-btn" data-tab="tab-mem-principal">Memoria Principal</button>
+            <button class="tab-btn" data-tab="tab-mem-tabla">Tabla de Páginas</button>
+            <button class="tab-btn" data-tab="tab-mem-reemplazo">Reemplazo</button>
+          </div>
+
+          <!-- TAB 1: Memoria Principal -->
+          <div class="tab-panel" id="tab-mem-principal">
+            <div id="mem-controls">
+              <button id="btn-run-memory">▶ Correr</button>
+              <button id="btn-reset-memory" disabled>↺ Reset</button>
+              <span id="mem-status">Frames libres: - / -</span>
+            </div>
+            <div id="mem-grid-wrapper">
+              <canvas id="mem-canvas"></canvas>
+            </div>
+            <div id="mem-summary">
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Frames Ocupados</span>
+                <span class="mem-summary-value" id="mem-used">-</span>
+              </div>
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Frames Libres</span>
+                <span class="mem-summary-value" id="mem-free">-</span>
+              </div>
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Fragmentación Interna</span>
+                <span class="mem-summary-value" id="mem-fragmentation">-</span>
+              </div>
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Page Faults</span>
+                <span class="mem-summary-value" id="mem-page-faults">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Tabla de Páginas -->
+          <div class="tab-panel" id="tab-mem-tabla">
+            <div id="mem-tabla-controls">
+              <label>Proceso:</label>
+              <select id="mem-pid-select">
+                <option value="">-- Seleccionar --</option>
+              </select>
+            </div>
+            <table id="mem-page-table">
+              <thead>
+                <tr>
+                  <th>Página</th>
+                  <th>Frame</th>
+                  <th>Valid</th>
+                  <th>Dirty</th>
+                </tr>
+              </thead>
+              <tbody id="mem-page-table-body"></tbody>
+            </table>
+          </div>
+
+          <!-- TAB 3: Reemplazo -->
+          <div class="tab-panel" id="tab-mem-reemplazo">
+            <div id="reemplazo-controls">
+              <label>Algoritmo:</label>
+              <select id="replace-algorithm">
+                <option value="fifo">FIFO</option>
+                <option value="lru">LRU</option>
+                <option value="optimal">Óptimo</option>
+                <option value="clock">Clock</option>
+                <option value="second">Segunda Oportunidad</option>
+              </select>
+              <button id="btn-run-replace">▶ Correr</button>
+              <button id="btn-reset-replace" disabled>↺ Reset</button>
+            </div>
+            <div id="reemplazo-speed-control">
+              <label>Velocidad:</label>
+              <input type="range" id="replace-speed" min="100" max="2000" value="1000" step="100">
+              <span id="replace-speed-label">1000ms</span>
+            </div>
+            <div id="reemplazo-references">
+              <span id="ref-sequence"></span>
+            </div>
+            <canvas id="replace-canvas"></canvas>
+            <div id="replace-summary">
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Page Faults</span>
+                <span class="mem-summary-value" id="replace-faults">0</span>
+              </div>
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Page Hits</span>
+                <span class="mem-summary-value" id="replace-hits">0</span>
+              </div>
+              <div class="mem-summary-item">
+                <span class="mem-summary-label">Fault Rate</span>
+                <span class="mem-summary-value" id="replace-rate">-</span>
+              </div>
+            </div>
+            <table id="replace-table">
+              <thead>
+                <tr>
+                  <th>Paso</th>
+                  <th>Página</th>
+                  <th>Frames</th>
+                  <th>Fault</th>
+                  <th>Reemplazada</th>
+                  <th>Bit Ref</th>
+                </tr>
+              </thead>
+              <tbody id="replace-table-body"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
+      <!-- Fin Ventana para Scheduling-->
+
 
       <div id="taskbar">
       </div>
@@ -248,6 +361,7 @@
       <a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">&copy; HTML5-Templates.com</a>	
       <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
     </div>
+    <script src="js/memory.js"></script>	
     <script src="js/ingresar-datos.js"></script>	
     <script src="js/scheduling-canvas.js"></script>	
     <script src="js/estados-canvas.js"></script>	
