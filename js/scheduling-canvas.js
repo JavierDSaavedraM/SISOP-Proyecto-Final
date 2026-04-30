@@ -1,6 +1,4 @@
-// ============================================================
-// CANVAS SETUP
-// ============================================================
+// CANVAS SETUP ============================================================
 var ganttCanvas   = null;
 var ganttCtx      = null;
 var queueCanvas   = null;
@@ -13,7 +11,6 @@ var animState = {
   queueAnim : null
 };
 
-var BLOCK_W  = 36;
 var GANTT_H  = 40;
 var TICK_H   = 20;
 var QUEUE_H  = 60;
@@ -21,6 +18,31 @@ var RUN_H    = 70;
 var CHIP_W   = 60;
 var CHIP_H   = 36;
 var CHIP_GAP = 10;
+
+function calcBlockW(timeline) {
+  var container  = document.getElementById("gantt-scroll");
+  var available  = container ? container.clientWidth - 20 : 600;
+  var numBlocks  = timeline.length;
+  var totalTime  = timeline.length > 0 ? timeline[timeline.length - 1].end : 1;
+
+  // Si el tiempo total es grande, escalar por bloques
+  if (totalTime > available) {
+    var byBlocks = Math.floor(available / numBlocks);
+    return Math.min(60, Math.max(30, byBlocks));
+  }
+
+  // Si el tiempo total cabe, escalar por unidades de tiempo
+  var byTime = Math.floor(available / totalTime);
+  return Math.min(60, Math.max(20, byTime));
+}
+
+function calcBlockWForBlock(block, timeline) {
+  var container  = document.getElementById("gantt-scroll");
+  var available  = container ? container.clientWidth - 20 : 600;
+  var totalTime  = timeline[timeline.length - 1].end;
+  var blockTime  = block.end - block.start;
+  return Math.max(30, Math.floor((blockTime / totalTime) * available));
+}
 
 function initCanvases() {
   ganttCanvas   = document.getElementById("gantt-canvas");
@@ -35,10 +57,15 @@ function initCanvases() {
 // COLORES
 // ============================================================
 var pidColors = [
-  "#b7b7e0","#f0c080","#80d0a0","#f08080",
-  "#80c8f0","#d0a0f0","#f0e080","#a0d0c0"
+  "#00d4ff", // cyan
+  "#00ffb3", // aqua green
+  "#7cff00", // lime
+  "#ffd400", // yellow
+  "#ff9a00", // orange
+  "#ff5cc8", // pink
+  "#9b6cff", // purple
+  "#ff4d4d"  // red
 ];
-
 function getColor(pid) {
   return pidColors[(pid - 1) % pidColors.length];
 }
@@ -65,44 +92,56 @@ function roundRect(ctx, x, y, w, h, r) {
 // ============================================================
 function drawGanttStatic(timeline, upToStep) {
   var visible   = timeline.slice(0, upToStep);
-  var totalTime = visible.length > 0 ? visible[visible.length - 1].end : 0;
+  var container = document.getElementById("gantt-scroll");
+  var available = container ? container.clientWidth - 20 : 600;
+  var totalTime = timeline.length > 0 ? timeline[timeline.length - 1].end : 1;
 
-  ganttCanvas.width  = Math.max(totalTime * BLOCK_W + BLOCK_W, 400);
+  // Calcular posicion x acumulada proporcionalmente
+  var positions = [];
+  var xCursor   = 0;
+  timeline.forEach(function(block) {
+    var w = Math.max(30, Math.floor(((block.end - block.start) / totalTime) * available));
+    positions.push({ x: xCursor, w: w });
+    xCursor += w;
+  });
+
+  ganttCanvas.width  = Math.max(xCursor + 10, 400);
   ganttCanvas.height = TICK_H + GANTT_H;
-
   ganttCtx.clearRect(0, 0, ganttCanvas.width, ganttCanvas.height);
 
-  visible.forEach(function(block) {
-    var x     = block.start * BLOCK_W;
-    var w     = (block.end - block.start) * BLOCK_W;
+  visible.forEach(function(block, i) {
+    var pos   = positions[i];
     var color = getColor(block.pid);
 
     ganttCtx.fillStyle   = color;
     ganttCtx.strokeStyle = "#000";
     ganttCtx.lineWidth   = 2;
-    ganttCtx.fillRect(x, TICK_H, w, GANTT_H);
-    ganttCtx.strokeRect(x, TICK_H, w, GANTT_H);
+    ganttCtx.fillRect(pos.x, TICK_H, pos.w, GANTT_H);
+    ganttCtx.strokeRect(pos.x, TICK_H, pos.w, GANTT_H);
+
+    if (pos.w > 20) {
+      ganttCtx.fillStyle    = "#000";
+      ganttCtx.font         = "bold 13px Arial";
+      ganttCtx.textAlign    = "center";
+      ganttCtx.textBaseline = "middle";
+      ganttCtx.fillText("P" + block.pid, pos.x + pos.w / 2, TICK_H + GANTT_H / 2);
+    }
 
     ganttCtx.fillStyle    = "#000";
-    ganttCtx.font         = "bold 13px Arial";
-    ganttCtx.textAlign    = "center";
-    ganttCtx.textBaseline = "middle";
-    ganttCtx.fillText("P" + block.pid, x + w / 2, TICK_H + GANTT_H / 2);
-
-    ganttCtx.fillStyle    = "#333";
     ganttCtx.font         = "11px Arial";
     ganttCtx.textAlign    = "left";
     ganttCtx.textBaseline = "top";
-    ganttCtx.fillText(block.start, x, 2);
+    ganttCtx.fillText(block.start, pos.x, 2);
   });
 
   if (visible.length > 0) {
-    var last = visible[visible.length - 1];
-    ganttCtx.fillStyle    = "#333";
+    var last    = visible[visible.length - 1];
+    var lastPos = positions[visible.length - 1];
+    ganttCtx.fillStyle    = "#000";
     ganttCtx.font         = "11px Arial";
     ganttCtx.textAlign    = "left";
     ganttCtx.textBaseline = "top";
-    ganttCtx.fillText(last.end, last.end * BLOCK_W, 2);
+    ganttCtx.fillText(last.end, lastPos.x + lastPos.w, 2);
   }
 }
 
@@ -115,9 +154,23 @@ function animateGanttBlock(timeline, upToStep, onComplete) {
     animState.blockAnim = null;
   }
 
+  var container = document.getElementById("gantt-scroll");
+  var available = container ? container.clientWidth - 20 : 600;
+  var totalTime = timeline[timeline.length - 1].end;
+
+  // Calcular posiciones proporcionales
+  var positions = [];
+  var xCursor   = 0;
+  timeline.forEach(function(block) {
+    var w = Math.max(30, Math.floor(((block.end - block.start) / totalTime) * available));
+    positions.push({ x: xCursor, w: w });
+    xCursor += w;
+  });
+
+  var pos       = positions[upToStep - 1];
   var block     = timeline[upToStep - 1];
-  var targetW   = (block.end - block.start) * BLOCK_W;
-  var startX    = block.start * BLOCK_W;
+  var targetW   = pos.w;
+  var startX    = pos.x;
   var color     = getColor(block.pid);
   var startTime = null;
   var speed     = 2100 - parseInt(document.getElementById("sched-speed").value);
@@ -134,7 +187,7 @@ function animateGanttBlock(timeline, upToStep, onComplete) {
     drawGanttStatic(timeline, prevStep);
 
     ganttCtx.fillStyle   = color;
-    ganttCtx.strokeStyle = "#2a2";
+    ganttCtx.strokeStyle = "#000";
     ganttCtx.lineWidth   = 2;
     ganttCtx.fillRect(startX, TICK_H, currentW, GANTT_H);
     ganttCtx.strokeRect(startX, TICK_H, currentW, GANTT_H);
@@ -299,7 +352,7 @@ function renderRunning(block, procs, usedBurst) {
 
   var barX = 8, barY = 28, barW = 284, barH = 22;
 
-  runningCtx.fillStyle   = "#ddd";
+  runningCtx.fillStyle   = "#000";
   runningCtx.strokeStyle = "#000";
   runningCtx.lineWidth   = 2;
   roundRect(runningCtx, barX, barY, barW, barH, 5);
@@ -319,7 +372,7 @@ function renderRunning(block, procs, usedBurst) {
   runningCtx.textBaseline = "middle";
   runningCtx.fillText(used + " / " + proc.burst + " burst", barX + barW / 2, barY + barH / 2);
 
-  runningCtx.fillStyle    = "#555";
+  runningCtx.fillStyle    = "#000";
   runningCtx.font         = "11px Arial";
   runningCtx.textAlign    = "left";
   runningCtx.textBaseline = "top";

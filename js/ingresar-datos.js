@@ -39,7 +39,7 @@ function renderTabla() {
   simData.processes.forEach(function(p) {
     var tr = document.createElement("tr");
     tr.innerHTML =
-      '<td><input type="number" class="pid"      value="' + p.pid      + '" readonly></td>' +
+      '<td>P' + p.pid      + '</td>' +
       '<td><input type="number" class="arrival"  value="' + p.arrival  + '"></td>' +
       '<td><input type="number" class="burst"    value="' + p.burst    + '"></td>' +
       '<td><input type="number" class="priority" value="' + p.priority + '"></td>' +
@@ -58,9 +58,9 @@ function syncFromTabla() {
     simData.processes.push({
       pid:      index + 1,
       arrival:  parseInt(tr.querySelector(".arrival").value)  || 0,
-      burst:    parseInt(tr.querySelector(".burst").value)    || 1,
-      priority: parseInt(tr.querySelector(".priority").value) || 1,
-      pages:    parseInt(tr.querySelector(".pages").value)    || 1
+      burst:    parseInt(tr.querySelector(".burst").value)    || 0,
+      priority: parseInt(tr.querySelector(".priority").value) || 0,
+      pages:    parseInt(tr.querySelector(".pages").value)    || 0
     });
   });
 }
@@ -71,7 +71,7 @@ document.getElementById("btn-add-proceso").addEventListener("click", function() 
   var nextPID = simData.processes.length > 0
     ? simData.processes[simData.processes.length - 1].pid + 1
     : 1;
-  simData.processes.push({ pid: nextPID, arrival: 0, burst: 1, priority: 1, pages: 1 });
+  simData.processes.push({ pid: nextPID, arrival: 0, burst: 0, priority: 0, pages: 0 });
   renderTabla();
 });
 

@@ -51,11 +51,11 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><input type="number" class="pid" min="1" value="1" readonly></td>
+                    <td>P1</td>
                     <td><input type="number" class="arrival" min="0" value="0"></td>
-                    <td><input type="number" class="burst" min="1" value="5"></td>
-                    <td><input type="number" class="priority" min="1" value="1"></td>
-                    <td><input type="number" class="pages" min="1" value="4"></td>
+                    <td><input type="number" class="burst" min="1" value="0"></td>
+                    <td><input type="number" class="priority" min="1" value="0"></td>
+                    <td><input type="number" class="pages" min="1" value="0"></td>
                     <td><button class="btn-remove-row">X</button></td>
                   </tr>
                 </tbody>
@@ -125,7 +125,7 @@
       </div>
       <!-- Fin Ventana para los diagramas de los procesos-->
       <!-- Inicio Ventana para Scheduling--> 
-      <div class="window closed" data-title="Scheduling / CPU">
+      <div class="window" data-title="Scheduling / CPU">
         <div class="tabs-container" id="scheduling-container">
           <!-- Controles superiores -->
           <div id="sched-controls">
@@ -233,7 +233,7 @@
       </div>
       <!-- Fin Ventana para Scheduling-->
       <!-- Inicio Ventana para Memoria y Paginacion-->
-      <div class="window" data-title="Memoria y Paginación">
+      <div class="window closed" data-title="Memoria y Paginación">
         <div class="tabs-container" id="memory-tabs">
           <div class="tabs-nav">
             <button class="tab-btn" data-tab="tab-mem-principal">Memoria Principal</button>
@@ -346,7 +346,6 @@
         </div>
       </div>
       <!-- Fin Ventana para Scheduling-->
-
 
       <div id="taskbar">
       </div>
