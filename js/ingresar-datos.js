@@ -44,6 +44,7 @@ function renderTabla() {
       '<td><input type="number" class="burst"    value="' + p.burst    + '"></td>' +
       '<td><input type="number" class="priority" value="' + p.priority + '"></td>' +
       '<td><input type="number" class="pages"    value="' + p.pages    + '"></td>' +
+      '<td><select class="proc-type"><option value="thread">Thread</option><option value="fork">Fork</option></select></td>' +
       '<td><button class="btn-remove-row">X</button></td>';
     tbody.appendChild(tr);
   });
@@ -58,9 +59,10 @@ function syncFromTabla() {
     simData.processes.push({
       pid:      index + 1,
       arrival:  parseInt(tr.querySelector(".arrival").value)  || 0,
-      burst:    parseInt(tr.querySelector(".burst").value)    || 0,
-      priority: parseInt(tr.querySelector(".priority").value) || 0,
-      pages:    parseInt(tr.querySelector(".pages").value)    || 0
+      burst:    parseInt(tr.querySelector(".burst").value)    || 1,
+      priority: parseInt(tr.querySelector(".priority").value) || 1,
+      pages:    parseInt(tr.querySelector(".pages").value)    || 1,
+      type: tr.querySelector(".proc-type").value || "thread"
     });
   });
 }
@@ -95,53 +97,53 @@ document.querySelector("#tabla-procesos tbody").addEventListener("change", funct
 });
 
 function validateCell(input) {
-    var val   = parseInt(input.value);
-    var field = input.className;
-    var min   = field === "arrival" ? 0 : 1;
+  var val   = parseInt(input.value);
+  var field = input.className;
+  var min   = field === "arrival" ? 0 : 1;
 
-    if (isNaN(val) || val < min) {
-        alert("Valor inválido en campo '" + field + "'. Debe ser >= " + min + ".");
-        input.value = min;
-    }
+  if (isNaN(val) || val < min) {
+    alert("Valor inválido en campo '" + field + "'. Debe ser >= " + min + ".");
+    input.value = min;
+  }
 }
 
 // ── Validacion global antes de correr algoritmo ──────────────
 function validateSimData() {
-    if (simData.processes.length === 0) {
-        alert("No hay procesos definidos.");
-        return false;
-    }
+  if (simData.processes.length === 0) {
+    alert("No hay procesos definidos.");
+    return false;
+  }
 
-    var warnings = [];
-    var errors   = [];
+  var warnings = [];
+  var errors   = [];
 
-    simData.processes.forEach(function(p) {
-        if (p.burst === 1)    warnings.push("P" + p.pid + ": Burst en valor default (1).");
-        if (p.priority === 1) warnings.push("P" + p.pid + ": Priority en valor default (1).");
-        if (p.pages === 1)    warnings.push("P" + p.pid + ": Pages en valor default (1).");
-        if (p.arrival < 0)    errors.push("P" + p.pid + ": Arrival no puede ser negativo.");
-        if (p.burst < 1)      errors.push("P" + p.pid + ": Burst debe ser >= 1.");
-        if (p.priority < 1)   errors.push("P" + p.pid + ": Priority debe ser >= 1.");
-        if (p.pages < 1)      errors.push("P" + p.pid + ": Pages debe ser >= 1.");
-    });
+  simData.processes.forEach(function(p) {
+    if (p.burst === 1)    warnings.push("P" + p.pid + ": Burst en valor default (1).");
+    if (p.priority === 1) warnings.push("P" + p.pid + ": Priority en valor default (1).");
+    if (p.pages === 1)    warnings.push("P" + p.pid + ": Pages en valor default (1).");
+    if (p.arrival < 0)    errors.push("P" + p.pid + ": Arrival no puede ser negativo.");
+    if (p.burst < 1)      errors.push("P" + p.pid + ": Burst debe ser >= 1.");
+    if (p.priority < 1)   errors.push("P" + p.pid + ": Priority debe ser >= 1.");
+    if (p.pages < 1)      errors.push("P" + p.pid + ": Pages debe ser >= 1.");
+  });
 
-    if (simData.memory.total < 1)    errors.push("Memoria total debe ser >= 1.");
-    if (simData.memory.pageSize < 1) errors.push("Tamaño de página debe ser >= 1.");
-    if (simData.memory.frames < 1)   errors.push("Número de frames debe ser >= 1.");
-    if (simData.memory.frames * simData.memory.pageSize > simData.memory.total) {
-        errors.push("Frames × PageSize (" + (simData.memory.frames * simData.memory.pageSize) + ") excede memoria total (" + simData.memory.total + ").");
-    }
+  if (simData.memory.total < 1)    errors.push("Memoria total debe ser >= 1.");
+  if (simData.memory.pageSize < 1) errors.push("Tamaño de página debe ser >= 1.");
+  if (simData.memory.frames < 1)   errors.push("Número de frames debe ser >= 1.");
+  if (simData.memory.frames * simData.memory.pageSize > simData.memory.total) {
+    errors.push("Frames × PageSize (" + (simData.memory.frames * simData.memory.pageSize) + ") excede memoria total (" + simData.memory.total + ").");
+  }
 
-    if (errors.length > 0) {
-        alert("Errores que impiden ejecutar:\n\n" + errors.join("\n"));
-        return false;
-    }
+  if (errors.length > 0) {
+    alert("Errores que impiden ejecutar:\n\n" + errors.join("\n"));
+    return false;
+  }
 
-    if (warnings.length > 0) {
-        return confirm("Advertencias (valores en default):\n\n" + warnings.join("\n") + "\n\n¿Continuar de todas formas?");
-    }
+  if (warnings.length > 0) {
+    return confirm("Advertencias (valores en default):\n\n" + warnings.join("\n") + "\n\n¿Continuar de todas formas?");
+  }
 
-    return true;
+  return true;
 }
 
 // ── Carga desde archivo de procesos ─────────────────
