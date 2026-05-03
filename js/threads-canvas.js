@@ -71,6 +71,8 @@ function drawThreadGanttStatic(timeline, upToStep) {
 
   // Bloques
   visible.forEach(function(block) {
+    var isFork = block.isFork || false;
+    console.log(block.label, "isFork:", block.isFork);
     var x     = T_LABEL_W + block.start * bw;
     var w     = (block.end - block.start) * bw;
     var y     = T_TICK_H + block.coreId * (T_GANTT_H + 2);
@@ -79,8 +81,30 @@ function drawThreadGanttStatic(timeline, upToStep) {
     threadGanttCtx.fillStyle   = color;
     threadGanttCtx.strokeStyle = "#000";
     threadGanttCtx.lineWidth   = 1;
-    threadGanttCtx.fillRect(x, y, w, T_GANTT_H);
-    threadGanttCtx.strokeRect(x, y, w, T_GANTT_H);
+
+    // Fork usa patron rayado, thread es solido
+    if (block.isFork) {
+      threadGanttCtx.fillRect(x, y, w, T_GANTT_H);
+      threadGanttCtx.save();
+      threadGanttCtx.beginPath();
+      threadGanttCtx.rect(x, y, w, T_GANTT_H);
+      threadGanttCtx.clip();
+      threadGanttCtx.strokeStyle = "rgba(0,0,0,0.3)";
+      threadGanttCtx.lineWidth   = 2;
+      for (var d = -T_GANTT_H; d < w + T_GANTT_H; d += 6) {
+        threadGanttCtx.beginPath();
+        threadGanttCtx.moveTo(x + d, y);
+        threadGanttCtx.lineTo(x + d + T_GANTT_H, y + T_GANTT_H);
+        threadGanttCtx.stroke();
+      }
+      threadGanttCtx.restore();
+      threadGanttCtx.strokeStyle = "#000";
+      threadGanttCtx.lineWidth   = 1;
+      threadGanttCtx.strokeRect(x, y, w, T_GANTT_H);
+    } else {
+      threadGanttCtx.fillRect(x, y, w, T_GANTT_H);
+      threadGanttCtx.strokeRect(x, y, w, T_GANTT_H);
+    }
 
     if (w > 24) {
       threadGanttCtx.fillStyle    = "#000";
@@ -100,7 +124,7 @@ function drawThreadGanttStatic(timeline, upToStep) {
     threadGanttCtx.font         = "10px Arial";
     threadGanttCtx.textAlign    = "center";
     threadGanttCtx.textBaseline = "bottom";
-    threadGanttCtx.fillText(t, tx, T_TICK_H - 2);
+    threadGanttCtx.fillText(parseFloat(t.toFixed(2)), tx, T_TICK_H - 2);
 
     threadGanttCtx.strokeStyle = "#ccc";
     threadGanttCtx.lineWidth   = 1;

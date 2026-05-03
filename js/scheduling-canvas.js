@@ -118,6 +118,7 @@ function drawGanttStatic(timeline, upToStep) {
     ganttCtx.lineWidth   = 2;
     ganttCtx.fillRect(pos.x, TICK_H, pos.w, GANTT_H);
     ganttCtx.strokeRect(pos.x, TICK_H, pos.w, GANTT_H);
+
     if (pos.w > 20) {
       ganttCtx.fillStyle    = "#000";
       ganttCtx.font         = "bold 13px Arial";
@@ -125,6 +126,7 @@ function drawGanttStatic(timeline, upToStep) {
       ganttCtx.textBaseline = "middle";
       ganttCtx.fillText("P" + block.pid, pos.x + pos.w / 2, TICK_H + GANTT_H / 2);
     }
+
     ganttCtx.fillStyle    = "#000";
     ganttCtx.font         = "11px Arial";
     ganttCtx.textAlign    = "left";
@@ -135,7 +137,12 @@ function drawGanttStatic(timeline, upToStep) {
   if (visible.length > 0) {
     var last    = visible[visible.length - 1];
     var lastPos = positions[visible.length - 1];
-    ganttCtx.fillStyle    = "#fff";
+    ganttCtx.fillStyle    = "#000";
+    ganttCtx.font         = "11px Arial";
+    ganttCtx.textAlign    = "left";
+    ganttCtx.textBaseline = "top";
+    ganttCtx.fillText(last.end, lastPos.x + lastPos.w, 2);
+  }
 }
 
 // ============================================================
@@ -180,7 +187,7 @@ function animateGanttBlock(timeline, upToStep, onComplete) {
     drawGanttStatic(timeline, prevStep);
 
     ganttCtx.fillStyle   = color;
-    ganttCtx.strokeStyle = "#fff";
+    ganttCtx.strokeStyle = "#000";
     ganttCtx.lineWidth   = 2;
     ganttCtx.fillRect(startX, TICK_H, currentW, GANTT_H);
     ganttCtx.strokeRect(startX, TICK_H, currentW, GANTT_H);
@@ -268,7 +275,7 @@ function animateQueue(readyProcs) {
 
     queueCtx.clearRect(0, 0, queueCanvas.width, queueCanvas.height);
 
-    queueCtx.fillStyle    = "#fff";
+    queueCtx.fillStyle    = "#555";
     queueCtx.font         = "12px Arial";
     queueCtx.textAlign    = "left";
     queueCtx.textBaseline = "middle";
@@ -337,7 +344,7 @@ function renderRunning(block, procs, usedBurst) {
 
   runningCtx.clearRect(0, 0, runningCanvas.width, runningCanvas.height);
 
-  runningCtx.fillStyle    = "#fff";
+  runningCtx.fillStyle    = "#000";
   runningCtx.font         = "bold 14px Arial";
   runningCtx.textAlign    = "left";
   runningCtx.textBaseline = "top";

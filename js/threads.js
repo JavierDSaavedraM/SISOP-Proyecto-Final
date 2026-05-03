@@ -50,7 +50,7 @@ function generateThreadsAndForks() {
       // Proceso fork - PID nuevo, memoria separada
       var fork = {
         pid     : nextPID,
-        label   : "P" + p.pid + "-F" + nextPID,
+        label   : "F" + p.pid + "-" + nextPID,
         type    : "fork",
         arrival : p.arrival,
         burst   : p.burst,
@@ -122,6 +122,7 @@ function runMulticoreScheduler() {
         burst    : t.burst,
         remaining: t.burst,
         priority : proc.priority,
+        isFork   : proc.type === "fork",  // agregar esto
         state    : "new"
       });
     });
@@ -180,6 +181,7 @@ function runMulticoreScheduler() {
         pid     : t.pid,
         tid     : t.tid,
         label   : t.label,
+        isFork  : t.isFork,  // agregar esto
         start   : time,
         end     : time + runTime
       });
@@ -210,7 +212,12 @@ function startThreads() {
     return;
   }
 
-  threadState.numCores = Math.min(20, Math.max(1, parseInt(document.getElementById("thread-cores").value) || 2));
+  var rawCores = parseInt(document.getElementById("thread-cores").value) || 2;
+  if (rawCores > 10) {
+    alert("Máximo 10 cores permitidos. Se usarán 10.");
+  }
+  threadState.numCores = Math.min(10, Math.max(1, rawCores));
+  document.getElementById("thread-cores").value = threadState.numCores;
 
   generateThreadsAndForks();
 
@@ -229,7 +236,6 @@ function startThreads() {
   document.getElementById("btn-reset-threads").disabled   = false;
 
   initThreadCanvases();
-  renderThreadTable();
   runThreadStep();
 }
 
@@ -278,7 +284,6 @@ function runThreadStep() {
     threadState.cores[block.coreId].currentThread = block;
 
     updateCoresGrid(timeline, step);
-    updateThreadTable(timeline, step);
     renderThreadGantt(timeline, step, function() {
       setTimeout(nextStep, speed * 0.4);
     });
@@ -290,61 +295,7 @@ function runThreadStep() {
 // ============================================================
 // RENDER TABLA DE THREADS
 // ============================================================
-function renderThreadTable() {
-  var tbody = document.getElementById("thread-table-body");
-  if (!tbody) return;
-  tbody.innerHTML = "";
 
-  threadState.processes.forEach(function(proc) {
-    proc.threads.forEach(function(t) {
-      var tr = document.createElement("tr");
-      tr.id  = "thread-row-" + proc.pid + "-" + t.id;
-      tr.innerHTML =
-        '<td>' + t.label + '</td>' +
-        '<td>' + proc.type + '</td>' +
-        '<td>' + t.burst.toFixed(2) + '</td>' +
-        '<td><span class="state-badge state-new" id="thread-state-' + proc.pid + '-' + t.id + '">New</span></td>' +
-        '<td id="thread-core-' + proc.pid + '-' + t.id + '">-</td>' +
-        '<td>' + (proc.memory === null ? "Compartida" : "Propia") + '</td>';
-      tbody.appendChild(tr);
-    });
-  });
-}
-
-function updateThreadTable(timeline, upToStep) {
-  var usedBurst = {};
-  timeline.slice(0, upToStep).forEach(function(b) {
-    var key = b.pid + "-" + b.tid;
-    usedBurst[key] = (usedBurst[key] || 0) + (b.end - b.start);
-  });
-
-  var block = timeline[upToStep - 1];
-
-  threadState.processes.forEach(function(proc) {
-    proc.threads.forEach(function(t) {
-      var key      = proc.pid + "-" + t.id;
-      var used     = usedBurst[key] || 0;
-      var stateEl  = document.getElementById("thread-state-" + proc.pid + "-" + t.id);
-      var coreEl   = document.getElementById("thread-core-"  + proc.pid + "-" + t.id);
-      if (!stateEl || !coreEl) return;
-
-      var state;
-      if (used >= t.burst) {
-        state = "terminated";
-      } else if (block.pid === proc.pid && block.tid === t.id) {
-        state = "running";
-        coreEl.textContent = "Core " + block.coreId;
-      } else if (proc.arrival <= block.start) {
-        state = "ready";
-      } else {
-        state = "new";
-      }
-
-      stateEl.className   = "state-badge state-" + state;
-      stateEl.textContent = state.charAt(0).toUpperCase() + state.slice(1);
-    });
-  });
-}
 
 function updateCoresGrid(timeline, step) {
   var block = timeline[step - 1];
@@ -365,7 +316,7 @@ function updateCoresGrid(timeline, step) {
     if (running) {
       el.style.background = getThreadColor(running.pid, running.tid);
       el.querySelector(".core-label").textContent = running.label;
-      el.querySelector(".core-status").textContent = "t=" + running.start + "→" + running.end;
+      el.querySelector(".core-status").textContent = "t=" + parseFloat(running.start.toFixed(2)) + "→" + parseFloat(running.end.toFixed(2));
     } else {
       el.style.background = "#eee";
       el.querySelector(".core-label").textContent = "Idle";

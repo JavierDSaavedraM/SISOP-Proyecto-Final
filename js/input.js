@@ -20,6 +20,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   if (buttons.length > 0) buttons[0].click();
+
+  var coresInput = document.getElementById("thread-cores");
+  if (coresInput) {
+    coresInput.addEventListener("change", function() {
+      var val = parseInt(this.value);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 10) {
+        alert("Máximo 10 cores permitidos.");
+        val = 10;
+      }
+      this.value = val;
+      renderCoresGrid(val);
+    });
+    renderCoresGrid(2);
+  }
 });
 
 
@@ -39,14 +54,16 @@ function renderTabla() {
   simData.processes.forEach(function(p) {
     var tr = document.createElement("tr");
     tr.innerHTML =
-      '<td>P' + p.pid      + '</td>' +
+      '<td>P' + p.pid + '</td>' +
       '<td><input type="number" class="arrival"  value="' + p.arrival  + '"></td>' +
       '<td><input type="number" class="burst"    value="' + p.burst    + '"></td>' +
       '<td><input type="number" class="priority" value="' + p.priority + '"></td>' +
       '<td><input type="number" class="pages"    value="' + p.pages    + '"></td>' +
-      '<td><select class="proc-type"><option value="thread">Thread</option><option value="fork">Fork</option></select></td>' +
+      '<td><select class="proc-type"><option value="thread">T</option><option value="fork">F</option></select></td>' +
       '<td><button class="btn-remove-row">X</button></td>';
     tbody.appendChild(tr);
+    // Restaurar valor del select despues de insertar
+    tr.querySelector(".proc-type").value = p.type || "thread";
   });
 }
 
@@ -59,9 +76,9 @@ function syncFromTabla() {
     simData.processes.push({
       pid:      index + 1,
       arrival:  parseInt(tr.querySelector(".arrival").value)  || 0,
-      burst:    parseInt(tr.querySelector(".burst").value)    || 1,
-      priority: parseInt(tr.querySelector(".priority").value) || 1,
-      pages:    parseInt(tr.querySelector(".pages").value)    || 1,
+      burst:    parseInt(tr.querySelector(".burst").value)    || 0,
+      priority: parseInt(tr.querySelector(".priority").value) || 0,
+      pages:    parseInt(tr.querySelector(".pages").value)    || 0,
       type: tr.querySelector(".proc-type").value || "thread"
     });
   });
@@ -73,7 +90,7 @@ document.getElementById("btn-add-proceso").addEventListener("click", function() 
   var nextPID = simData.processes.length > 0
     ? simData.processes[simData.processes.length - 1].pid + 1
     : 1;
-  simData.processes.push({ pid: nextPID, arrival: 0, burst: 0, priority: 0, pages: 0 });
+  simData.processes.push({ pid: nextPID, arrival: 0, burst: 0, priority: 0, pages: 0, type: "thread" });
   renderTabla();
 });
 
@@ -88,11 +105,13 @@ document.querySelector("#tabla-procesos tbody").addEventListener("click", functi
   }
 });
 
+
 // ── Validacion individual al cambiar celda ───────────────────
 document.querySelector("#tabla-procesos tbody").addEventListener("change", function(e) {
   var input = e.target;
-  if (!input.matches("input[type='number']")) return;
-  validateCell(input);
+  if (input.matches("input[type='number']")) {
+    validateCell(input);
+  }
   syncFromTabla();
 });
 
@@ -172,7 +191,8 @@ function parseProcesos(text) {
       arrival:  parseInt(parts[1]),
       burst:    parseInt(parts[2]),
       priority: parseInt(parts[3]),
-      pages:    parseInt(parts[4])
+      pages:    parseInt(parts[4]),
+      type:     parts[5] ? parts[5].trim() : "thread"
     });
   }
 }

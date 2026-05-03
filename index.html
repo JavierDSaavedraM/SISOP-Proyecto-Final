@@ -8,7 +8,7 @@
     <link rel="canonical" href="https://html5-templates.com/" />
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="js/script.js"></script>	
+    <script src="js/windows.js"></script>	
     <link rel="stylesheet" type="text/css" href="css/base-template.css" />
     <link rel="stylesheet" type="text/css" href="css/input-window.css" />
     <link rel="stylesheet" type="text/css" href="css/scheduling.css" />
@@ -55,10 +55,10 @@
                   <tr>
                     <td>P1</td>
                     <td><input type="number" class="arrival" min="0" value="0"></td>
-                    <td><input type="number" class="burst" min="1" value="5"></td>
-                    <td><input type="number" class="priority" min="1" value="1"></td>
-                    <td><input type="number" class="pages" min="2" value="4"></td>
-                    <td><select class="proc-type"><option value="thread">Thread</option><option value="fork">Fork</option></select></td>
+                    <td><input type="number" class="burst" min="1" value="0"></td>
+                    <td><input type="number" class="priority" min="1" value="0"></td>
+                    <td><input type="number" class="pages" min="2" value="0"></td>
+                    <td><select class="proc-type"><option value="thread">T</option><option value="fork">F</option></select></td>
                     <td><button class="btn-remove-row">X</button></td>
                   </tr>
                 </tbody>
@@ -171,10 +171,6 @@
             <div class="sched-panel" id="panel-running">
               <h3>En Ejecución</h3>
               <canvas id="running-canvas"></canvas>
-            </div>
-            <div class="sched-panel" id="panel-context">
-              <h3>Cambios de Contexto</h3>
-              <span id="context-count">0</span>
             </div>
           </div>
 
@@ -349,13 +345,14 @@
         </div>
       </div>
       <!-- Fin Ventana para Scheduling-->
+      <!-- Inicio Ventana para Concurrencia-->
       <div class="window closed" data-title="Threads y Paralelismo">
         <div id="thread-controls">
           <button id="btn-run-threads">▶ Correr</button>
           <button id="btn-pause-threads" disabled>⏸ Pausar</button>
           <button id="btn-reset-threads" disabled>↺ Reset</button>
           <label>Cores:</label>
-          <input type="number" id="thread-cores" min="1" max="20" value="2">
+          <input type="number" id="thread-cores" min="1" max="10" value="2">
           <label>Algoritmo:</label>
           <select id="thread-algorithm">
             <option value="fcfs">FCFS</option>
@@ -373,6 +370,18 @@
           <span id="thread-speed-label">1000ms</span>
         </div>
 
+        <div id="thread-legend">
+          <div class="legend-item">
+            <div class="legend-block legend-thread"></div>
+            <span>Thread (memoria compartida)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-block legend-fork"></div>
+            <span>Fork (memoria propia)</span>
+          </div>
+        </div>
+
+
         <!-- Grid de cores -->
         <div id="cores-section">
           <h3>Cores Activos</h3>
@@ -387,23 +396,6 @@
           </div>
         </div>
 
-        <!-- Tabla de threads -->
-        <div id="thread-table-section">
-          <h3>Estado de Threads</h3>
-          <table id="thread-table">
-            <thead>
-              <tr>
-                <th>Thread</th>
-                <th>Tipo</th>
-                <th>Burst</th>
-                <th>Estado</th>
-                <th>Core</th>
-                <th>Memoria</th>
-              </tr>
-            </thead>
-            <tbody id="thread-table-body"></tbody>
-          </table>
-        </div>
       </div>
 
       <div id="taskbar">
@@ -420,12 +412,12 @@
       <a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">&copy; HTML5-Templates.com</a>	
       <!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
     </div>
-    <script src="js/memory.js"></script>	
-    <script src="js/ingresar-datos.js"></script>	
+    <script src="js/input.js"></script>	
     <script src="js/scheduling-canvas.js"></script>	
-    <script src="js/estados-canvas.js"></script>	
-    <script src="js/scheduling.js"></script>	
     <script src="js/threads-canvas.js"></script>
+    <script src="js/states-canvas.js"></script>	
+    <script src="js/scheduling.js"></script>	
+    <script src="js/memory.js"></script>	
     <script src="js/threads.js"></script>
   </body>
 </html>

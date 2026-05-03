@@ -4,7 +4,6 @@
 var schedState = {
   timeline       : [],
   currentStep    : 0,
-  contextChanges : 0,
   isRunning      : false,
   stepPaused     : false,
   metrics        : {},
@@ -249,13 +248,6 @@ function calcMetrics(timeline, procs) {
   return { metrics: metrics, firstResponse: firstResponse };
 }
 
-function countContextChanges(timeline) {
-  var count = 0;
-  for (var i = 1; i < timeline.length; i++) {
-    if (timeline[i].pid !== timeline[i - 1].pid) count++;
-  }
-  return count;
-}
 
 // ============================================================
 // RENDER TABLA DE METRICAS
@@ -418,7 +410,6 @@ function startSched() {
 
   schedState.timeline       = timeline;
   schedState.currentStep    = 0;
-  schedState.contextChanges = countContextChanges(timeline);
   schedState.isRunning      = true;
   schedState.stepPaused     = false;
   schedState.metrics        = result.metrics;
@@ -428,7 +419,6 @@ function startSched() {
   document.getElementById("btn-run-sched").classList.add("running");
   document.getElementById("btn-next-step").disabled       = false;
   document.getElementById("btn-reset-sched").disabled     = false;
-  document.getElementById("context-count").textContent    = schedState.contextChanges;
 
   initCanvases();
   runStep();
@@ -438,7 +428,6 @@ function startSched() {
 function resetSched() {
   schedState.timeline       = [];
   schedState.currentStep    = 0;
-  schedState.contextChanges = 0;
   schedState.isRunning      = false;
   schedState.stepPaused     = false;
   schedState.metrics        = {};
@@ -448,7 +437,6 @@ function resetSched() {
   document.getElementById("btn-next-step").textContent    = "⏸ Pausar";
   document.getElementById("btn-next-step").disabled       = true;
   document.getElementById("btn-reset-sched").disabled     = true;
-  document.getElementById("context-count").textContent    = "0";
   document.getElementById("avg-turnaround").textContent   = "-";
   document.getElementById("avg-waiting").textContent      = "-";
   document.getElementById("avg-response").textContent     = "-";
