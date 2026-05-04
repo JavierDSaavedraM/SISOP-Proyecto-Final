@@ -107,24 +107,6 @@
   display: block;
 }
 
-/* Tabla */
-#thread-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-#thread-table th,
-#thread-table td {
-  border: 1px solid #999;
-  padding: 4px 8px;
-  text-align: center;
-}
-
-#thread-table th {
-  background: #b7b7e0;
-  font-weight: bold;
-}
 #thread-legend {
   display: flex;
   gap: 16px;

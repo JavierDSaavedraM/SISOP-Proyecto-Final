@@ -395,12 +395,12 @@ function renderCoresGrid(numCores) {
 // COLOR POR THREAD
 // ============================================================
 var threadColors = [
-  "#b7b7e0","#c7c7f0","#d7d7ff",
-  "#f0c080","#f0d080","#f0e080",
-  "#80d0a0","#90e0b0","#a0f0c0",
-  "#f08080","#f09090","#f0a0a0",
-  "#80c8f0","#90d8f0","#a0e8f0",
-  "#d0a0f0","#e0b0f0","#f0c0f0"
+  "#00d4f0","#33e0f5","#66ebf8",
+  "#00ffb3","#33ffc2","#66ffd1",
+  "#7cff00","#99ff33","#b3ff66",
+  "#ffd400","#ffe033","#ffeb66",
+  "#ff9a00","#ffad33","#ffc066",
+  "#ff5cc8","#ff85d6","#ffade3"
 ];
 
 function getThreadColor(pid, tid) {
