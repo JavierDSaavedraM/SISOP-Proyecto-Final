@@ -149,3 +149,18 @@
   border-radius: 4px;
   font-size: 13px;
 }
+
+#replace-canvas-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  margin-bottom: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#replace-canvas {
+  display: block;
+  margin: 0 auto;
+}

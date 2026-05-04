@@ -310,10 +310,9 @@
               <input type="range" id="replace-speed" min="100" max="2000" value="1000" step="100">
               <span id="replace-speed-label">1000ms</span>
             </div>
-            <div id="reemplazo-references">
-              <span id="ref-sequence"></span>
+            <div id="replace-canvas-wrapper">
+              <canvas id="replace-canvas"></canvas>
             </div>
-            <canvas id="replace-canvas"></canvas>
             <div id="replace-summary">
               <div class="mem-summary-item">
                 <span class="mem-summary-label">Page Faults</span>
@@ -328,23 +327,10 @@
                 <span class="mem-summary-value" id="replace-rate">-</span>
               </div>
             </div>
-            <table id="replace-table">
-              <thead>
-                <tr>
-                  <th>Paso</th>
-                  <th>Página</th>
-                  <th>Frames</th>
-                  <th>Fault</th>
-                  <th>Reemplazada</th>
-                  <th>Bit Ref</th>
-                </tr>
-              </thead>
-              <tbody id="replace-table-body"></tbody>
-            </table>
           </div>
         </div>
       </div>
-      <!-- Fin Ventana para Scheduling-->
+      <!-- Fin Ventana para Memoria-->
       <!-- Inicio Ventana para Concurrencia-->
       <div class="window closed" data-title="Threads y Paralelismo">
         <div id="thread-controls">
@@ -414,6 +400,7 @@
     </div>
     <script src="js/input.js"></script>	
     <script src="js/scheduling-canvas.js"></script>	
+    <script src="js/memory-canvas.js"></script>	
     <script src="js/threads-canvas.js"></script>
     <script src="js/states-canvas.js"></script>	
     <script src="js/scheduling.js"></script>	
